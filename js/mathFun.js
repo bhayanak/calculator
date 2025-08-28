@@ -108,7 +108,7 @@ const mathFunList = [
   },
   {
     title: 'Kaprekar’s Constant',
-    instruction: 'Pick any 4-digit number (not all digits the same), subtract the smallest arrangement from the largest, repeat. You’ll get 6174!',
+    instruction: 'Pick any 4-digit number (not all digits the same), subtract the smallest arrangement from the largest, repeat. You’ll get multiple of 3087!',
     example: '4321-1234',
   },
   {
@@ -158,22 +158,22 @@ const mathFunList = [
   },
   {
     title: 'Multiplying by 6',
-    instruction: 'Multiply by 3, then double the result. Try 7 × 6!',
+    instruction: 'To multiply by 6, first multiply by 3, then double the result.\nFor example: 7×3=21, then 21×2=42, so 7×6=42.\nTry 7 × 6 using this trick!',
     example: '7×6',
   },
   {
     title: 'Multiplying by 8',
-    instruction: 'Double three times! Try 6 × 8.',
+    instruction: 'To multiply by 8, double the number three times.\nFor example: 6×2=12, 12×2=24, 24×2=48, so 6×8=48.\nTry 6 × 8 and follow the doubling steps!',
     example: '6×8',
   },
   {
     title: 'Multiplying by 7',
-    instruction: 'Multiply by 5, then add double the number. Try 9 × 7!',
+    instruction: 'To multiply by 7, multiply by 5, then add double the number.\nFor example: 9×5=45, 9×2=18, 45+18=63, so 9×7=63.\nTry 9 × 7 using this method!',
     example: '9×7',
   },
   {
     title: 'Multiplying by 13',
-    instruction: 'Multiply by 10, add triple the number. Try 7 × 13!',
+    instruction: 'To multiply by 13, multiply by 10, then add triple the number.\nFor example: 7×10=70, 7×3=21, 70+21=91, so 7×13=91.\nTry 7 × 13 using this trick!',
     example: '7×13',
   },
   {
