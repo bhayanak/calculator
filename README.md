@@ -28,4 +28,8 @@ A playful, modular browser-based calculator built with HTML, CSS, and JavaScript
   - `data.js` (future expansion)
 
 ---
+
+Check it live at: 
+### https://bhayanak.github.io/calculator/
+
 Enjoy learning and playing with numbers! 🚀
