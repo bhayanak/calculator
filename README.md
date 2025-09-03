@@ -1,12 +1,12 @@
 
 # 🎨 Fun HTML Calculator
 
-A playful, modular browser-based calculator built with HTML, CSS, and JavaScript. Features a modern, Apple-like UI and includes a "Math Fun" section with interactive math tricks and curiosities for kids and learners.
+A playful, modular browser-based calculator built with HTML, CSS, and JavaScript. Features a modern UI and includes a "Math Fun" section with interactive math tricks and curiosities for kids and learners.
 
 
 ## Features
 - **Always-visible basic calculator**: Number and operation pad is always present for quick calculations
-- **Modern, Apple-like UI**: Clean, touch-friendly, and mobile-first design for all calculator modes
+- **Modern UI**: Clean, touch-friendly, and mobile-first design for all calculator modes
 - **Scientific calculator mode**: Advanced functions (sin, cos, tan, log, ln, π, e, etc.)
 - **Convert mode**: Vertical, touch-friendly UI for converting between Length, Area, Volume, Weight, Temperature, Angle, Data, Energy, Power, Pressure, Speed, Time and Currency
 - **Math Fun panel**: Random math tricks, clear explanations, and auto-fill examples for learning
@@ -24,7 +24,7 @@ A playful, modular browser-based calculator built with HTML, CSS, and JavaScript
 
 ## File Structure
 - `index.html` — Main app structure
-- `style.css` — Visual design, Apple-like themes, and responsive layout
+- `style.css` — Visual design themes, and responsive layout
 - `js/` — Modular JavaScript files:
   - `calculator.js` (core logic)
   - `mathFun.js` (fun instructions)
