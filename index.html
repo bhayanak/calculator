@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fun HTML Calculator</title>
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><text y='60' font-size='60'>🧮</text></svg>">
+  <title>All in One Calculator</title>
+  <link rel="icon" type="image/svg+xml" href="lion-logo.svg">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Comic+Neue:700|Baloo+2:700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -15,6 +14,8 @@
     <section class="calculator-section">
       <div class="top-bar">
         <div class="menu-buttons">
+          <img src="lion-logo.svg" alt="All In One Calculator" id="app-logo"
+            style="height:2.2em;vertical-align:middle;cursor:pointer;margin-right:0.7em;" title="Reset Calculator">
           <button id="options-btn" class="menu-btn">Options</button>
           <button id="themes-btn" class="menu-btn">Themes</button>
         </div>
@@ -84,5 +85,18 @@
   <script src="js/mathFun.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/ui.js"></script>
+</body>
+<script>
+  // Reset calculator to default on logo click
+  document.addEventListener('DOMContentLoaded', function () {
+    var logo = document.getElementById('app-logo');
+    if (logo) {
+      logo.addEventListener('click', function () {
+        // Reload the page to reset everything
+        window.location.reload();
+      });
+    }
+  });
+</script>
 </body>
 </html>
