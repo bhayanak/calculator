@@ -3,6 +3,36 @@ const convertTabs = document.querySelectorAll('.convert-tab');
 const convertBody = document.getElementById('convert-body');
 
 const convertUnits = {
+  currency: [
+    { name: 'US Dollar', abbr: 'USD' },
+    { name: 'Euro', abbr: 'EUR' },
+    { name: 'Indian Rupee', abbr: 'INR' },
+    { name: 'Chinese Yuan', abbr: 'CNY' },
+    { name: 'Japanese Yen', abbr: 'JPY' },
+    { name: 'South Korean Won', abbr: 'KRW' },
+    { name: 'Singapore Dollar', abbr: 'SGD' },
+    { name: 'Hong Kong Dollar', abbr: 'HKD' },
+    { name: 'Taiwan Dollar', abbr: 'TWD' },
+    { name: 'Thai Baht', abbr: 'THB' },
+    { name: 'Malaysian Ringgit', abbr: 'MYR' },
+    { name: 'Indonesian Rupiah', abbr: 'IDR' },
+    { name: 'Philippine Peso', abbr: 'PHP' },
+    { name: 'Vietnamese Dong', abbr: 'VND' },
+    { name: 'Pakistani Rupee', abbr: 'PKR' },
+    { name: 'Bangladeshi Taka', abbr: 'BDT' },
+    { name: 'UAE Dirham', abbr: 'AED' },
+    { name: 'Saudi Riyal', abbr: 'SAR' },
+    { name: 'Qatari Riyal', abbr: 'QAR' },
+    { name: 'Kuwaiti Dinar', abbr: 'KWD' },
+    { name: 'Sri Lankan Rupee', abbr: 'LKR' },
+    { name: 'Nepalese Rupee', abbr: 'NPR' },
+    { name: 'British Pound', abbr: 'GBP' },
+    { name: 'Australian Dollar', abbr: 'AUD' },
+    { name: 'Canadian Dollar', abbr: 'CAD' },
+    { name: 'Swiss Franc', abbr: 'CHF' },
+    { name: 'Brazilian Real', abbr: 'BRL' },
+    { name: 'South African Rand', abbr: 'ZAR' }
+  ],
   length: [
     { name: 'Millimeter', abbr: 'mm', factor: 0.001 },
     { name: 'Centimeter', abbr: 'cm', factor: 0.01 },
@@ -125,8 +155,8 @@ function renderConvertUI(type) {
     opt2.textContent = `${u.name} (${u.abbr})`;
     toSel.appendChild(opt2);
   });
-  fromSel.selectedIndex = 2; // default: Meter, Gram, etc
-  toSel.selectedIndex = 3; // default: next unit
+  fromSel.selectedIndex = 0;
+  toSel.selectedIndex = 1;
   let input = document.createElement('input');
   input.type = 'number';
   input.placeholder = 'Enter value';
@@ -160,16 +190,72 @@ function renderConvertUI(type) {
   convertBody.appendChild(fromRow);
   convertBody.appendChild(toRow);
 
-  function convert() {
+  // For currency, fetch live rates
+  let rateInfo = null;
+  let lastUpdated = null;
+  let infoDiv = null;
+  if (type === 'currency') {
+    infoDiv = document.createElement('div');
+    infoDiv.className = 'convert-info';
+    infoDiv.style.fontSize = '0.95em';
+    infoDiv.style.marginTop = '0.5em';
+    convertBody.appendChild(infoDiv);
+  }
+
+  async function getCachedRates(base) {
+    const key = `currencyRates_${base}`;
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      try {
+        const obj = JSON.parse(cached);
+        if (obj && obj.time_next_update_unix && Date.now() < obj.time_next_update_unix * 1000) {
+          return obj;
+        }
+      } catch {}
+    }
+    // Fetch new rates
+    infoDiv && (infoDiv.textContent = 'Fetching rates...');
+    const url = `https://open.er-api.com/v6/latest/${base}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data && data.result === 'success') {
+      localStorage.setItem(key, JSON.stringify(data));
+      return data;
+    }
+    return null;
+  }
+
+  async function convert() {
     let val = parseFloat(input.value);
     if (isNaN(val)) {
       output.value = '';
+      if (infoDiv) infoDiv.textContent = '';
       return;
     }
     if (type === 'temperature') {
       let from = units[fromSel.value].abbr;
       let to = units[toSel.value].abbr;
       output.value = convertTemperature(val, from, to);
+    } else if (type === 'currency') {
+      let from = units[fromSel.value].abbr;
+      let to = units[toSel.value].abbr;
+      if (from === to) {
+        output.value = val;
+        if (infoDiv) infoDiv.textContent = '';
+        return;
+      }
+      infoDiv.textContent = 'Loading rates...';
+      let ratesData = await getCachedRates(from);
+      if (!ratesData || !ratesData.rates || !ratesData.rates[to]) {
+        output.value = '';
+        infoDiv.textContent = 'Could not fetch rates.';
+        return;
+      }
+      let rate = ratesData.rates[to];
+      let result = val * rate;
+      output.value = result.toFixed(4);
+      let date = ratesData.time_last_update_utc || '';
+      infoDiv.textContent = `1 ${from} = ${rate} ${to} (as of ${date.replace('00:00 UTC', '').trim()})`;
     } else {
       let fromF = units[fromSel.value].factor;
       let toF = units[toSel.value].factor;

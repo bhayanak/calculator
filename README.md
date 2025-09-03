@@ -8,7 +8,7 @@ A playful, modular browser-based calculator built with HTML, CSS, and JavaScript
 - **Always-visible basic calculator**: Number and operation pad is always present for quick calculations
 - **Modern, Apple-like UI**: Clean, touch-friendly, and mobile-first design for all calculator modes
 - **Scientific calculator mode**: Advanced functions (sin, cos, tan, log, ln, π, e, etc.)
-- **Convert mode**: Vertical, touch-friendly UI for converting between Length, Area, Volume, Weight, Temperature, Angle, Data, Energy, Power, Pressure, Speed, and Time
+- **Convert mode**: Vertical, touch-friendly UI for converting between Length, Area, Volume, Weight, Temperature, Angle, Data, Energy, Power, Pressure, Speed, Time and Currency
 - **Math Fun panel**: Random math tricks, clear explanations, and auto-fill examples for learning
 - **Theme switcher**: Light, Dark, Rainbow themes
 - **Keyboard input support**
