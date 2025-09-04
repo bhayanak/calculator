@@ -166,29 +166,64 @@ function renderConvertUI(type) {
   output.readOnly = true;
   output.className = 'convert-output';
 
+
   // Labels
   let fromLabel = document.createElement('div');
   fromLabel.className = 'convert-label';
   fromLabel.textContent = 'From:';
-  let toLabel = document.createElement('div');
+  let toLabel = document.createElement('span');
   toLabel.className = 'convert-label';
   toLabel.textContent = 'To:';
 
-  // Rows
+  // Swap button (smaller, inline)
+  let swapBtn = document.createElement('button');
+  swapBtn.className = 'swap-btn';
+  swapBtn.title = 'Swap units';
+  swapBtn.innerHTML = `<img src="swap.png" alt="Swap" width="25" height="30" style="display:block;object-fit:contain;" />`;
+  swapBtn.type = 'button';
+
+  // From row
   let fromRow = document.createElement('div');
   fromRow.className = 'convert-row';
   fromRow.appendChild(fromLabel);
   fromRow.appendChild(input);
   fromRow.appendChild(fromSel);
 
-  let toRow = document.createElement('div');
-  toRow.className = 'convert-row';
-  toRow.appendChild(toLabel);
-  toRow.appendChild(output);
-  toRow.appendChild(toSel);
+  // To label + swap button row (dedicated flex row, label left, swap right)
+  let toLabelSwapRow = document.createElement('div');
+  toLabelSwapRow.className = 'to-label-swap-row';
+  toLabelSwapRow.appendChild(toLabel);
+  toLabelSwapRow.appendChild(swapBtn);
+
+  // To select row (full width)
+  let toSelectRow = document.createElement('div');
+  toSelectRow.className = 'convert-row';
+  toSelectRow.appendChild(toSel);
+
+  let outputRow = document.createElement('div');
+  outputRow.className = 'convert-row';
+  outputRow.appendChild(output);
 
   convertBody.appendChild(fromRow);
-  convertBody.appendChild(toRow);
+  convertBody.appendChild(toLabelSwapRow);
+  convertBody.appendChild(toSelectRow);
+  convertBody.appendChild(outputRow);
+  // Swap logic
+  swapBtn.addEventListener('click', () => {
+    // Swap selected values (not indices)
+    const fromValue = fromSel.value;
+    const toValue = toSel.value;
+    fromSel.value = toValue;
+    toSel.value = fromValue;
+    swapBtn.innerHTML = `<img src="swap.png" alt="Swap" width="25" height="30" style="display:block;object-fit:contain;" />`;
+    // Swap input/output values if not currency (for currency, only swap units)
+    if (type !== 'currency') {
+      const tempVal = input.value;
+      input.value = output.value;
+      output.value = tempVal;
+    }
+    convert();
+  });
 
   // For currency, fetch live rates
   let rateInfo = null;
