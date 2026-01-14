@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All in One Calculator</title>
+  <title>🎉 Super Fun Calculator for Kids!</title>
   <link rel="icon" type="image/svg+xml" href="lion-logo.svg">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Comic+Neue:700|Baloo+2:700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
+  <h1 class="app-title">🌟 Super Fun Calculator 🎨</h1>
   <main>
     <section class="calculator-section">
       <div class="top-bar">
         <div class="menu-buttons">
-          <img src="lion-logo.svg" alt="All In One Calculator" id="app-logo"
-            style="height:2.2em;vertical-align:middle;cursor:pointer;margin-right:0.7em;" title="Reset Calculator">
-          <button id="options-btn" class="menu-btn">Options</button>
-          <button id="themes-btn" class="menu-btn">Themes</button>
+          <lottie-player id="mascot-animation" src="pigeon.json" background="transparent" speed="1"
+            style="height:5em;vertical-align:middle;cursor:pointer;margin-right:0.7em;display:inline-block;" loop autoplay
+            title="Fun Mascot!">
+          </lottie-player>
+          <button id="options-btn" class="menu-btn">🔢 Options</button>
+          <button id="themes-btn" class="menu-btn">🎨 Themes</button>
         </div>
         <div id="options-menu" class="dropdown-menu" style="display:none;">
           <button class="dropdown-item" data-mode="basic">Basic</button>
@@ -73,17 +77,38 @@
     </section>
     <section class="math-fun-section">
       <div class="math-fun-panel">
+        <h2 class="fun-title">✨ Math Magic! ✨</h2>
         <div id="fun-instruction" class="fun-instruction">Click below for a math curiosity!</div>
         <div class="fun-buttons">
-          <button id="show-fun">Show Me Something Cool!</button>
-          <button id="try-fun" disabled>Try It Now</button>
+          <button id="show-fun" class="fun-btn">🎲 Show Me Something Cool!</button>
+          <button id="try-fun" class="fun-btn" disabled>🚀 Try It Now</button>
+          </div>
+          </div>
+          
+          <!-- Did You Know Section -->
+          <div class="dyk-panel">
+            <h3 class="dyk-title">💡 Did You Know?</h3>
+            <div id="dyk-fact" class="dyk-fact">Math is everywhere!</div>
+            <button id="new-fact" class="dyk-btn">Tell Me More!</button>
+          </div>
+          
+          <!-- Quick Challenge Section -->
+          <div class="challenge-panel" id="challenge-panel" style="display:none;">
+            <h3 class="challenge-title">🏆 Quick Challenge!</h3>
+            <div id="challenge-question" class="challenge-question"></div>
+            <input type="text" id="challenge-answer" class="challenge-input" placeholder="Your answer?">
+            <div class="challenge-buttons">
+              <button id="check-answer" class="challenge-btn">Check ✓</button>
+              <button id="skip-challenge" class="challenge-btn-skip">Skip ⏭</button>
         </div>
+        <div id="challenge-result" class="challenge-result"></div>
       </div>
     </section>
   </main>
   <script src="js/calculator.js"></script>
   <script src="js/mathFun.js"></script>
   <script src="js/theme.js"></script>
+  <script src="js/mascot.js"></script>
   <script src="js/ui.js"></script>
 </body>
 <script>

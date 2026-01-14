@@ -340,13 +340,14 @@ const sciButtonLayout = [
   ['sin', 'cos', 'tan', 'ln', 'log'],
   ['π', 'e', '^', '√', '('],
   ['7', '8', '9', '÷', ')'],
-  ['4', '5', '6', '×', 'C'],
+  ['4', '5', '6', '×', 'AC'],
   ['1', '2', '3', '−', '←'],
   ['0', '.', '=', '+', 'ANS']
 ];
 
 let sciExpression = '';
 let sciLastResult = '0';
+let sciError = false;
 
 function createSciButtons() {
   sciButtonsDiv.innerHTML = '';
@@ -363,53 +364,108 @@ function createSciButtons() {
 }
 
 function handleSciButton(label) {
+  // Clear error state when starting fresh input (except when pressing =, AC, or ←)
+  if (sciError && label !== '=' && label !== 'AC' && label !== '←') {
+    sciExpression = '';
+    sciError = false;
+  }
+
   switch (label) {
+    case 'AC':
     case 'C':
       sciExpression = '';
       sciExprDiv.textContent = '';
       sciResultDiv.textContent = '0';
+      sciError = false;
       break;
     case '←':
-      sciExpression = sciExpression.slice(0, -1);
-      sciExprDiv.textContent = sciExpression;
+      if (!sciError) {
+        sciExpression = sciExpression.slice(0, -1);
+        sciExprDiv.textContent = sciExpression || '0';
+        sciResultDiv.textContent = sciExpression || '0';
+      }
       break;
     case '=':
       try {
-        let expr = sciExpression
-          .replace(/π/g, 'Math.PI')
-          .replace(/e/g, 'Math.E')
-          .replace(/÷/g, '/')
-          .replace(/×/g, '*')
-          .replace(/−/g, '-')
-          .replace(/√/g, 'Math.sqrt')
-          .replace(/\^/g, '**')
-          .replace(/sin/g, 'Math.sin')
-          .replace(/cos/g, 'Math.cos')
-          .replace(/tan/g, 'Math.tan')
-          .replace(/log/g, 'Math.log10')
-          .replace(/ln/g, 'Math.log');
-        // Replace ANS with last result
-        expr = expr.replace(/ANS/g, sciLastResult);
+        let expr = sciExpression;
+
+        // Auto-close any unclosed parentheses before evaluation
+        const openCount = (expr.match(/\(/g) || []).length;
+        const closeCount = (expr.match(/\)/g) || []).length;
+        const needClose = openCount - closeCount;
+        if (needClose > 0) {
+          expr += ')'.repeat(needClose);
+          sciExpression = expr; // Update the expression with closed brackets
+        }
+
+        // Replace function names FIRST (longest to shortest to avoid conflicts)
+        // This prevents "sin" replacement from breaking "asin", etc.
+        const replacements = [
+          { pattern: /sqrt/gi, value: 'Math.sqrt' },
+          { pattern: /sin/gi, value: 'Math.sin' },
+          { pattern: /cos/gi, value: 'Math.cos' },
+          { pattern: /tan/gi, value: 'Math.tan' },
+          { pattern: /log/gi, value: 'Math.log10' },
+          { pattern: /ln/gi, value: 'Math.log' },
+          { pattern: /π/g, value: 'Math.PI' },
+          { pattern: /e/g, value: 'Math.E' },
+          { pattern: /÷/g, value: '/' },
+          { pattern: /×/g, value: '*' },
+          { pattern: /−/g, value: '-' },
+          { pattern: /√/g, value: 'Math.sqrt' },
+          { pattern: /\^/g, value: '**' },
+          { pattern: /ANS/g, value: sciLastResult }
+        ];
+
+        for (const rep of replacements) {
+          expr = expr.replace(rep.pattern, rep.value);
+        }
+
         // eslint-disable-next-line no-eval
         let result = eval(expr);
         if (typeof result === 'number' && isFinite(result)) {
+          // Round to reasonable precision
+          result = Math.round(result * 1e10) / 1e10;
           sciLastResult = result.toString();
           sciResultDiv.textContent = sciLastResult;
+          sciExprDiv.textContent = sciExpression;
+          sciExpression = sciLastResult; // Allow continuing from result
+          sciError = false;
         } else {
-          sciResultDiv.textContent = 'Error';
+          throw new Error('Invalid result');
         }
-      } catch {
+      } catch (e) {
         sciResultDiv.textContent = 'Error';
+        sciExprDiv.textContent = sciExpression;
+        sciError = true;
       }
-      sciExprDiv.textContent = sciExpression;
       break;
     case 'ANS':
-      sciExpression += sciLastResult;
-      sciExprDiv.textContent = sciExpression;
+      if (!sciError) {
+        sciExpression += sciLastResult;
+        sciExprDiv.textContent = sciExpression;
+      }
       break;
     default:
-      sciExpression += label;
-      sciExprDiv.textContent = sciExpression;
+      if (!sciError) {
+        // Handle explicit functions like √, sin, cos, etc.
+        const funcs = ['sin', 'cos', 'tan', 'ln', 'log', '√'];
+        if (funcs.includes(label)) {
+          // If the last character was a number or closing paren, add implicit multiplication
+          if (/[0-9)πe]$/.test(sciExpression)) {
+            sciExpression += '×';
+          }
+          sciExpression += label + '(';
+        } else {
+          // If input is a number and previous was a closing paren or constant, add implicit *
+          // e.g. (2+2)3 -> (2+2)*3
+          if ((/\d/.test(label) || label === '.') && /[)πe]$/.test(sciExpression)) {
+            sciExpression += '×';
+          }
+          sciExpression += label;
+        }
+        sciExprDiv.textContent = sciExpression;
+      }
   }
 }
 
@@ -453,6 +509,27 @@ function updateDisplay(val) {
 }
 
 const calc = new window.Calculator(updateDisplay);
+window.Calculator.instance = calc; // Expose instance for Fun Math
+
+// Listen for example loading from Math Fun
+window.addEventListener('loadExample', (e) => {
+  // Switch to basic mode if not already
+  setMode('basic');
+  calc.setExpression(e.detail);
+});
+
+// Sound and History Integration
+document.addEventListener('click', (e) => {
+  if (e.target.tagName === 'BUTTON') {
+    const label = e.target.textContent;
+    if (window.playSound && typeof window.playSound === 'function') {
+      if (label === 'AC' || label === 'C') window.playSound('clear');
+      else if (label === '=') window.playSound('success');
+      else window.playSound('click');
+    }
+  }
+});
+
 // Dropdown menu logic
 function closeMenus() {
   optionsMenu.style.display = 'none';
@@ -477,6 +554,10 @@ themesMenu.querySelectorAll('.dropdown-item').forEach(btn => {
   btn.onclick = () => {
     window.setTheme(btn.dataset.theme);
     closeMenus();
+    // Change mascot when theme changes
+    if (window.changeMascotRandom && typeof window.changeMascotRandom === 'function') {
+      window.changeMascotRandom();
+    }
   };
 });
 
@@ -485,6 +566,10 @@ optionsMenu.querySelectorAll('.dropdown-item').forEach(btn => {
   btn.onclick = () => {
     setMode(btn.dataset.mode);
     closeMenus();
+    // Change mascot when mode changes
+    if (window.changeMascotRandom && typeof window.changeMascotRandom === 'function') {
+      window.changeMascotRandom();
+    }
   };
 });
 
@@ -594,6 +679,10 @@ showFunBtn.onclick = () => {
   currentFun = window.getRandomFun();
   funInstruction.innerHTML = `<b>${currentFun.title}:</b> ${currentFun.instruction}`;
   tryFunBtn.disabled = false;
+  // Change mascot when showing new math magic
+  if (window.changeMascotRandom && typeof window.changeMascotRandom === 'function') {
+    window.changeMascotRandom();
+  }
 };
 tryFunBtn.onclick = () => {
   if (currentFun && currentFun.example) {
