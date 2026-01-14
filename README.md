@@ -20,25 +20,7 @@ A playful, modular browser-based calculator built with HTML, CSS, and JavaScript
 1. Clone or download this repository.
 2. Open `index.html` in your web browser (no build step needed).
 3. Enjoy calculating, converting, and exploring math fun!
-
-
-## File Structure
-- `index.html` — Main app structure
-- `style.css` — Visual design themes, and responsive layout
-- `js/` — Modular JavaScript files:
-  - `calculator.js` (core logic)
-  - `mathFun.js` (fun instructions)
-  - `theme.js` (theme switching)
-  - `ui.js` (UI, mode switching, and event wiring)
-  - `data.js` (future expansion)
-
----
-
-
 ---
 
 Check it live at: 
 ### https://bhayanak.github.io/calculator/
-
-
-Enjoy learning, converting, and playing with numbers! 🚀
