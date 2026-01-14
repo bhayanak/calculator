@@ -21,6 +21,7 @@ class Calculator {
     if (char === '.' && /[.][^+\-*/]*$/.test(this.expression)) return;
     this.expression += char;
     this.updateDisplay(this.expression);
+    if (window.updateMascot) window.updateMascot('thinking');
   }
 
   evaluate() {
@@ -32,6 +33,11 @@ class Calculator {
       // eslint-disable-next-line no-eval
       let result = eval(safeExpr);
       if (typeof result === 'number' && isFinite(result)) {
+        // Add to history if global function available
+        if (window.addToHistory) window.addToHistory(this.expression, result);
+        if (window.fireConfetti && result > 100) window.fireConfetti();
+        if (window.updateMascot) window.updateMascot('success');
+
         this.expression = result.toString();
         this.updateDisplay(this.expression);
       } else {
@@ -40,6 +46,7 @@ class Calculator {
     } catch {
       this.updateDisplay('Error');
       this.expression = '';
+      if (window.updateMascot) window.updateMascot('error');
     }
   }
 
